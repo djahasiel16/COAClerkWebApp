@@ -1,0 +1,101 @@
+{% if docs %}
+<table class="table table-striped rounded p-0" style="font-size: 13px;">
+    <thead>
+      <tr>
+        <th scope="col">No.</th>
+        <th scope="col">ID</th>
+        <th scope="col">Thumbnail</th>
+        <th scope="col">Created at</th>
+        <th scope="col">Type</th>
+        <th scope="col">Title</th>
+        <th scope="col">Description</th>
+        <th scope="col">Remarks</th>
+        <th scope="col">Filing Reference</th>
+        <th scope="col">Fund</th>
+        <th scope="col">Received at</th>
+        <th scope="col">Status</th>
+        <th scope="col">Options</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in docs %}
+        <tr class="align-middle">
+          <td>
+            {{forloop.counter}}.
+          </td>
+          <td>
+            #{{ doc.id |stringformat:"04d"}}
+          </td>
+          <td>
+            <a href="/media/{{doc.thumbnail}}">
+              <img src="/media/{{doc.thumbnail}}" alt="img" height="75px" class="rounded">
+            </a>
+          </td>
+          <td>
+            {{doc.created_at|date:"Y-m-d"}}
+            <br>
+            <div class="text-secondary" style="font-size: 12px;">
+              {{doc.created_at|date:"h:m a"}}
+            </div>
+          </td>
+            <td>{{doc.type}}</td>
+            <td>{{doc.title}}</td>
+            <td>
+              <div class="btn align-start p-0" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title='{{doc.description}}' style="font-size: 13px;">
+                {{doc.description|truncatechars:44}}
+              </div>
+            </td>
+            <td>
+                {{doc.remarks|truncatechars:20}}
+            </td>
+            <td>{{doc.filing_ref}}</td>
+            <td>{{doc.fund}}</td>
+            <td>{{doc.date_received|date:'Y-m-d'}} <div class="text-secondary" style="font-size: 12px;">{{doc.time_received}}</div></td>
+            <td>
+              {% if doc.status == "verified" %}
+              <div class="badge text-bg-success text-white align-middle">
+                Verified
+              </div>
+              {% elif doc.status == "unverified" %}
+              <div class="badge text-bg-warning text-white align-middle">
+                Unverfied
+              </div>
+              {% endif %}
+            </td>
+            <td>
+
+              <div class="btn-group">
+                <button type="button" class="btn border border-primary text-primary px-2 py-1 badge rounded-pill dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Options
+                </button>
+                <ul class="dropdown-menu border border-primary " style="--bs-bg-opacity: .5;">
+                  <li>
+                    <a class="dropdown-item text-primary" href="/doc-inventory/update-document/{{doc.id}}/edit/">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                      </svg>
+                      Update
+                    </a>
+                  </li>
+                  <li>
+                    
+                  </li>
+                </ul>
+              </div>
+            </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-center pt-2">No Records Found</p>
+
+  {% endif %}
+  <script>
+    // Initialize Bootstrap popovers
+    var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+      return new bootstrap.Popover(popoverTriggerEl);
+    });
+  </script>

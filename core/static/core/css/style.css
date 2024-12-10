@@ -1,0 +1,24 @@
+
+.nav-box {
+    transition: 1s;
+    width: 250px;
+    height: 100px;
+    background-color: rgb(255, 255, 255);
+    text-align: center;
+    align-content: center;
+    font-size: medium;
+    font-weight: 500;
+    border-radius: 8px;
+    color: rgb(96, 96, 96);
+    border: 1px;
+    text-decoration: none;
+}
+
+
+.nav-box:hover {
+    background-color: rgb(191, 191, 191);
+    color: white;
+    transition: 1s;
+    
+}
+

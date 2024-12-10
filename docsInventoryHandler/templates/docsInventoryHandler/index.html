@@ -1,0 +1,105 @@
+{% extends 'base/base.html' %}
+{% block title %}
+Document Inventory
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="my-2 bg-white rounded-top px-4 py-2 d-flex flex-col justify-content-between">
+        <h4 class="d-flex align-items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+                <path d="M9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.5zm0 1v2A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z"/>
+            </svg>
+            Document Inventory
+        </h4>
+        {% include 'docsInventoryHandler/modals/modalForm.html' %}
+    </div>
+    <form class="bg-white rounded-bottom d-flex py-3 gap-2 px-2" style="margin-top: -7px;" action="/doc-inventory/filtered/" method="POST">
+        {% csrf_token %}
+        <!-- <form action="" class="container"> -->
+            <div class="d-flex flex-col justify-content-start rounded">
+                <div class="form-floating">
+                    <input type="date" class="form-control" id="dateInput" name="startdate" value="{{filters.startdate}}">
+                    <label for="floatingStartDate" style="margin-top: -14px;">Start Date</label>
+                </div>
+            </div>
+            <div class="d-flex flex-col justify-content-start rounded">
+                <div class="form-floating">
+                    <input type="date" class="form-control" id="dateInput" name="enddate" value="{{filters.enddate}}">
+                    <label for="floatingEndDate" style="margin-top: -14px;">End Date</label>
+                </div>
+            </div>
+            <div class="d-flex flex-col justify-content-start rounded">
+                <div class="form-floating">
+                    <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="fund">
+                    {% if filters.fund %}
+                    <option selected value={{filters.fund}}>
+                        {{ filters.fund }}
+                    </option>
+                    {% else %}
+                    <option value="">-- Select --</option>
+                    {% endif %}
+                      {% for fund in funds %}
+                        <option value="{{fund}}">{{fund}}</option>
+                      {% endfor %}
+                    </select>
+                    <label for="floatingSelect" style="margin-top: -14px;">Fund</label>
+                  </div>
+            </div>
+            <div class="d-flex flex-col justify-content-start rounded">
+                <div class="form-floating">
+                    <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="title">
+                    {% if filters.title %}
+                    <option selected value="{{filters.title}}">
+                    {{ filters.title }}
+                    <option value="">-- Select --</option>
+                    </option>
+                    {% else %}
+                    <option value="">-- Select --</option>
+                    {% endif %}
+                    {% for title in titles%}
+                        <option value="{{title}}">{{title}}</option>
+                    {% endfor %}
+                    </select>
+                    <label for="floatingSelect" style="margin-top: -14px;">Title</label>
+                  </div>
+            </div>
+            <div class="d-flex flex-col justify-content-start rounded">
+                <div class="form-floating">
+                    <select class="form-select" id="floatingSelect" aria-label="Floating label select example" name="office">
+                    {% if filters.office %}
+                    <option selected value="{{filters.office}}">
+                    {{ filters.office }}
+                    <option value="">-- Select --</option>
+                    </option>
+                    {% else %}
+                    <option value="">-- Select --</option>
+                    {% endif %}
+                    {% for office in offices%}
+                        <option value="{{office}}">{{office}}</option>
+                    {% endfor %}
+                    </select>
+                    <label for="floatingSelect" style="margin-top: -14px;">Office</label>
+                  </div>
+            </div>
+            <button class="btn border" type="submit">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-sliders2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.5 1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4H1.5a.5.5 0 0 1 0-1H10V1.5a.5.5 0 0 1 .5-.5M12 3.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m-6.5 2A.5.5 0 0 1 6 6v1.5h8.5a.5.5 0 0 1 0 1H6V10a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5M1 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 1 8m9.5 2a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V13H1.5a.5.5 0 0 1 0-1H10v-1.5a.5.5 0 0 1 .5-.5m1.5 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+                  </svg> -->
+                  <span>Apply</span>
+            </button>
+            <button class="btn border" type="reset">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-sliders2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M10.5 1a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4H1.5a.5.5 0 0 1 0-1H10V1.5a.5.5 0 0 1 .5-.5M12 3.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5m-6.5 2A.5.5 0 0 1 6 6v1.5h8.5a.5.5 0 0 1 0 1H6V10a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5M1 8a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2A.5.5 0 0 1 1 8m9.5 2a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V13H1.5a.5.5 0 0 1 0-1H10v-1.5a.5.5 0 0 1 .5-.5m1.5 2.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5"/>
+                  </svg> -->
+                  <a href="" class="text-decoration-none text-dark">Reset</a>
+            </button>
+        <!-- </form> -->
+
+    </form>
+      
+    <div class="my-2 bg-white rounded p-1 mt-3">
+        {% include 'docsInventoryHandler/tables/documents-table.html' %}
+    </div>
+</div>
+{% endblock %}

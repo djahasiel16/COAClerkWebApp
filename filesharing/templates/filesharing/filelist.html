@@ -1,0 +1,24 @@
+{% if files|length > 0 %}
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Filename</th>
+        <th scope="col">Uploaded</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for file in files %}
+      <tr>
+        <td scope="row">{{ forloop.counter }}.</th>
+        <td><a href="/media/{{file.file}}" target="_blank" class="text-decoration-none text-black">{{ file.title }}</a></td>
+        <td>{{ file.uploaded_at|date }}</td>
+        <td><a href="/media/{{file.file}}" download>Download</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-center fw-medium">No Records Found!</p>
+  {% endif %}
