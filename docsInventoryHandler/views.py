@@ -2,11 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from .forms import DocumentForm, FilterForm
 from .models import Document
+from django.core.paginator import Paginator
+
 
 
 # Create your views here.
 def index(request):
     docs = Document.objects.all().order_by('fund', 'doc_month')
+
+    paginator = Paginator(docs, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     titles = [title[0] for title in DocumentForm.DOCUMENT_TITLE]
     funds = [fund[0] for fund in DocumentForm.FUND_CHOICES]
     offices = [office[0] for office in DocumentForm.OFFICE_CHOICES]
@@ -20,7 +27,7 @@ def index(request):
     else:
         form = DocumentForm()
 
-    return render(request, 'docsInventoryHandler/index.html', {'form': form, 'docs': docs, 'titles':titles, 'funds':funds, 'offices':offices})
+    return render(request, 'docsInventoryHandler/index.html', {'form': form, 'docs': page_obj, 'titles':titles, 'funds':funds, 'offices':offices, 'page_obj':page_obj})
 
 def update_document(request, pk):
     doc = Document.objects.get(pk=pk)
@@ -71,7 +78,6 @@ def apply_filter(request):
             offices.remove(office)
         except Exception as e:
             print(e)
-            print(office)
 
         print(sanitized_filter)
         return render(request, 'docsInventoryHandler/index.html', {'docs': docs,'filters':{'startdate':startdate, 'enddate':enddate, 'fund':fund, 'title':title, 'office':office}, 'titles':titles, 'funds':funds, 'offices':offices})
