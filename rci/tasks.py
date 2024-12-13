@@ -1,18 +1,14 @@
-from django.shortcuts import render, redirect
-from django.http.response import HttpResponse
-import datetime
-import re
+from celery import shared_task
 from openpyxl import load_workbook
-from .models import *
+import re
 from glob import glob
-from django.db.utils import IntegrityError
-from django.apps import apps
-from django.db.models import Max, Min
-from django.contrib import messages
-from django.urls import reverse
-from .tasks import loadRCIData
+from datetime import datetime
+from .models import *
+from django.db import  IntegrityError
 
-def loadRCIData(request):
+
+@shared_task
+def loadRCIData():
     exclude = ['DataEntry', 'constants', 'Pivot Table', 'Dashboard', 'Database Filter']
     directory = "C:\\Users\\User\\Jahasiel\\Automations\\RCI Entries\\"
     excel_files = glob(directory + "*.xlsm")
@@ -136,24 +132,4 @@ def loadRCIData(request):
                                 pass
 
                                 
-    messages.add_message(request, messages.SUCCESS, 'Data Updated Successfully')
-    return redirect('rci-index')
-
-
-# Create your views here.
-def index(request):
-    app_models = [model for model in apps.get_app_config('rci').get_models() if re.search('disbursmentvoucher', model.__name__, re.IGNORECASE)]
-    app_model_data = {}
-    for model in app_models:
-        app_model_data[" Fund 501 ".join(model.__name__.split("_")[:2])] = {
-            'data':model.objects.all(),
-            'max_date':model.objects.aggregate(Max('dte')),
-            'min_date':model.objects.aggregate(Min('dte')),
-            'max_check':model.objects.aggregate(Max('check_no')),
-            'min_check':model.objects.aggregate(Min('check_no'))
-            }
-
-    return render(request, 'rci/index.html', {'app_models':app_model_data})
-
-def listView(request, fund):
-    pass
+    return 'Update Successfully'
