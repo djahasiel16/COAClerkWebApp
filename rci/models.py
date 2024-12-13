@@ -11,8 +11,8 @@ class ASDI_LFPS_DisbursmentVoucherRecord(models.Model):
     no = models.IntegerField()
     dv_no = models.CharField(max_length=14, default="0000-00-00", blank=True, null=True)
     asa_no = models.CharField(max_length=30, null=True, blank=True)
-    payee = models.CharField(max_length=255)
-    nature_of_transaction = models.CharField(max_length=255)
+    payee = models.CharField(max_length=255, null=True, blank=True)
+    nature_of_transaction = models.CharField(max_length=255, null=True, blank=True)
     amountNetOfTax = models.DecimalField(decimal_places=2, max_digits=14)
     grossAmount = models.DecimalField(decimal_places=2, max_digits=14)    
 
