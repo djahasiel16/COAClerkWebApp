@@ -5,14 +5,13 @@ import re
 from openpyxl import load_workbook
 from .models import *
 from glob import glob
+from django.db.utils import IntegrityError
+from asgiref.sync import sync_to_async
 
 def loadRCIData(request):
-    exclude = ['DataEntry', 'constants', 'Pivot Table']
-    path = r"C:\Users\User\Jahasiel\HandyScripts\data_extractor\RCI_LFPS_2024.xlsm"
+    exclude = ['DataEntry', 'constants', 'Pivot Table', 'Dashboard', 'Database Filter']
     directory = "C:\\Users\\User\\Jahasiel\\Automations\\RCI Entries\\"
     excel_files = glob(directory + "*.xlsm")
-
-    
 
     def match_array(find, array):
         for arr in array:
@@ -29,20 +28,6 @@ def loadRCIData(request):
         print(f"Done Loading: {xl}")
 
     for addr, wb in loaded_wbs.items():
-        if re.search(r"SDN 501 LFPS RCI", addr):
-            new_entry = SDN_LFPS_DisbursmentVoucherRecord
-        elif re.search(r"SDN 501 COB RCI", addr):
-            new_entry = SDN_COB_DisbursmentVoucherRecord
-        elif re.search(r"SDN 501 CARP RCI", addr):
-            new_entry = SDN_CARP_DisbursmentVoucherRecord
-        elif re.search(r"501 LFPS RCI", addr):
-            new_entry = ASDI_LFPS_DisbursmentVoucherRecord
-        elif re.search(r"501 COB RCI", addr):
-            new_entry = ASDI_COB_DisbursmentVoucherRecord
-        elif re.search(r"501 CARP RCI", addr):
-            new_entry = ASDI_CARP_DisbursmentVoucherRecord
-        else:
-            print(f"Addr: {addr}")
 
         for ws in wb.worksheets:
 
@@ -107,34 +92,50 @@ def loadRCIData(request):
                                 'amountNetOfTax':net_of_tax,
                                 'grossAmount':gross_amount
                             }
-                            new_entry.objects.create(**data)
+
                             print(no)
-                            # try:
-                                # if re.search(r"SDN 501 LFPS RCI", addr):
-                                #     new_entry = SDN_LFPS_DisbursmentVoucherRecord.objects.create(**data)
-                                # elif re.search(r"SDN 501 COB RCI", addr):
-                                #     new_entry = SDN_COB_DisbursmentVoucherRecord.objects.create(**data)
-                                # elif re.search(r"SDN 501 CARP RCI", addr):
-                                #     new_entry = SDN_CARP_DisbursmentVoucherRecord.objects.create(**data)
-                                # elif re.search(r"501 LFPS RCI", addr):
-                                #     new_entry = ASDI_LFPS_DisbursmentVoucherRecord.objects.create(**data)
-                                # elif re.search(r"501 COB RCI", addr):
-                                #     new_entry = ASDI_COB_DisbursmentVoucherRecord.objects.create(**data)
-                                # elif re.search(r"501 CARP RCI", addr):
-                                #     new_entry = ASDI_CARP_DisbursmentVoucherRecord.objects.create(**data)
-                                # else:
-                                #     pass
+
+                            try:
+                                if re.search(r"SDN 501 LFPS RCI", addr):
+                                    new_entry = SDN_LFPS_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                elif re.search(r"SDN 501 COB RCI", addr):
+                                    new_entry = SDN_COB_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                elif re.search(r"SDN 501 CARP RCI", addr):
+                                    new_entry = SDN_CARP_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                elif re.search(r"501 LFPS RCI", addr):
+                                    new_entry = ASDI_LFPS_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                elif re.search(r"501 COB RCI", addr):
+                                    new_entry = ASDI_COB_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                elif re.search(r"501 CARP RCI", addr):
+                                    new_entry = ASDI_CARP_DisbursmentVoucherRecord.objects.create(**data)
+                                    new_entry.save()
+                                else:
+                                    pass
                                 
-                            # except Exception as e:
-                            #     print(e)
-        print(f"Model Obj: {new_entry}")
-        print(f"Excel Processed: {addr}")
-        if input("Press [Y] to save [N] to Cancel").upper() == "Y":
-            new_entry.save()
-        else:
-            print("Operation Cancelled, changes not saved.")
+                            except IntegrityError:
+                                with open('IntegrityError.txt', 'a') as ieWriter:
+                                    ieWriter.writelines([str(check_no), " | ", addr, '\n'])
+
+                            except Exception as e:
+                                print(e)
+                                dte = input("Format Y-m-dTH:m:s :: ") or dte
+                                check_no = input("Check No: ") or check_no
+                                payee = input("Payee: ") or payee
+                                with open('log.txt', 'a') as logwriter:
+                                    logwriter.writelines([addr, str(check_no),str(data),'\n-------------------------------------------------------'])
+                            finally:
+                                pass
+
+                                
             
     return HttpResponse("Done Processing")
 
 
 # Create your views here.
+def index(request):
+    return render(request, 'rci/index.html')

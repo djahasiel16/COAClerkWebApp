@@ -23,5 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("core.urls")),
     path('filesharing/', include('filesharing.urls')),
-    path('doc-inventory/', include('docsInventoryHandler.urls'))
+    path('doc-inventory/', include('docsInventoryHandler.urls')),
+    path('excel-handler/', include('excelHandler.urls')),
+    path('rci/', include('rci.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

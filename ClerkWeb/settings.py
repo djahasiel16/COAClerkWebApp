@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap4',
     'filesharing',
     'docsInventoryHandler',
-    'excelHandler'
+    'excelHandler',
+    'rci',
 ]
 
 # CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
