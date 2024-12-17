@@ -4,5 +4,6 @@ from . import views
 
 urlpatterns = [
     path('index/', views.index, name='rci-index'),
-    path('load-rci-data/', views.loadRCIData, name='load-rci-data')
+    path('load-rci-data/', views.loadRCIData, name='load-rci-data'),
+    path('post-data-endpoint/<str:fund>/', views.postdataendpoint)
 ]

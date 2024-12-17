@@ -11,6 +11,7 @@ from django.db.models import Max, Min
 from django.contrib import messages
 from django.urls import reverse
 from .tasks import loadRCIData
+from django.views.decorators.csrf import csrf_exempt
 
 def loadRCIData(request):
     exclude = ['DataEntry', 'constants', 'Pivot Table', 'Dashboard', 'Database Filter']
@@ -155,5 +156,39 @@ def index(request):
 
     return render(request, 'rci/index.html', {'app_models':app_model_data})
 
-def listView(request, fund):
-    pass
+@csrf_exempt
+def postdataendpoint(request, fund):
+    if request.method == "POST":
+        check_no = request.POST['check_no']
+        dte = request.POST['dte']
+        no = request.POST['no']
+        dv_no = request.POST['dv_no']
+        asa_no = request.POST['asa_no']
+        payee = request.POST['payee']
+        nature_of_transaction = request.POST['nature_of_transaction']
+        amountNetOfTax = request.POST['amountNetOfTax']
+        grossAmount = request.POST['grossAmount']
+        app_model = [model for model in apps.get_app_config('rci').get_models() if re.match('TEST_LFPS_DisbursmentVoucherRecord', model.__name__)]
+        if len(app_model) == 1:
+            app_model = app_model[0]
+            create_record = app_model.objects.create(
+                check_no=check_no,
+                dte=datetime.datetime.strptime(dte, "%m/%d/%Y").strftime("%Y-%m-%d"),
+                no=no,
+                dv_no=dv_no,
+                asa_no=asa_no,
+                payee=payee,
+                nature_of_transaction=nature_of_transaction,
+                amountNetOfTax=amountNetOfTax,
+                grossAmount=grossAmount
+            )
+            create_record.save()
+            print("Data Created")
+        else:
+            return HttpResponse("app_model contains more than one record")
+
+        print(app_model)
+        print(f"{request.POST}")
+
+        return HttpResponse(f"Success")
+    return HttpResponse("Request Method not Post")
